@@ -1,12 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import {StyleSheet, Text, View,TouchableHighlight,Alert, Button,Image,Modal,Dimensions,ActivityIndicator } from 'react-native';
+import {StyleSheet, Text, View,TouchableHighlight,Alert,Image,Modal,Dimensions,ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { withNavigation } from 'react-navigation';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-import FlashMessage from "react-native-flash-message";
-import {showMessage, hideMessage} from "react-native-flash-message"; 
+import {showMessage} from "react-native-flash-message"; 
 import mime from "mime"
 import ImageZoom from 'react-native-image-pan-zoom';
 import * as SecureStore from 'expo-secure-store';
@@ -23,7 +22,6 @@ import Logout from '../Log Out/Logout';
 
   state={
     photo:null,
-    processed:null,
     fileName:'data:image/jpg;base64,',
     jsonData:null,
     modalVisible: false,
@@ -34,16 +32,6 @@ import Logout from '../Log Out/Logout';
 
   async componentDidMount(){
     this.connectToServer();
-
-  }
-
-  async getValueFor(key) {
-    let result = await SecureStore.getItemAsync(key);
-    if (result) {
-      return result
-    } else {
-      console.log('No values stored under that key.');
-    }
   }
 
   setModalVisible = (visible) => {
@@ -65,7 +53,7 @@ import Logout from '../Log Out/Logout';
 
     let accessToken = await SecureStore.getItemAsync('accessToken')
 
-    fetch('http://45.88.173.109:10000/api/discard', {
+    fetch('http://100.64.102.26:10000/api/discard', {
       method: "DELETE",
       headers:{'Authorization': 'Bearer '+accessToken}
     }) 
@@ -79,10 +67,7 @@ import Logout from '../Log Out/Logout';
   }
 
   savedata = (responseText) => {
-    let value = {'responseText' : responseText.message}   
-    AsyncStorage.setItem('fileName', JSON.stringify(value));
        this.setState({fileName: 'data:image/png;base64,'+responseText.message});
-
    } 
 
   createFormData = (photo,body) => {
@@ -101,7 +86,7 @@ import Logout from '../Log Out/Logout';
   
     handleUploadPhoto =  async () => {
       let accessToken = await SecureStore.getItemAsync('accessToken')
-      fetch('http://45.88.173.109:10000/api/upload', {
+      fetch('http://100.64.102.26:10000/api/upload', {
         method: "POST",
         headers:{'Authorization': 'Bearer '+accessToken},
         body: this.createFormData(this.state.photo,{language:this.state.targetLanguage})
@@ -110,7 +95,6 @@ import Logout from '../Log Out/Logout';
         .then(data => {
           this.savedata(data)
           this.setState({newImageSet:data.newImageSet})
-          this.setState({processed:data})
           this.setState({ photo: null });
           this.setModalVisible(true)
           this.setModalLoadingVisible(false)
@@ -120,8 +104,7 @@ import Logout from '../Log Out/Logout';
           this.setModalLoadingVisible(false)
           console.log("upload error", error);
           alert("Upload failed!");
-        });
-        
+        }); 
     };
 
   pickFromGallery = async () =>{
@@ -159,32 +142,32 @@ import Logout from '../Log Out/Logout';
   pickFromCamera = async () =>{
     NetInfo.fetch().then(async networkState => {
       if(networkState.isConnected){
-    const {granted} = await Permissions.askAsync(Permissions.CAMERA)
-    if(granted){
-      let data = await ImagePicker.launchCameraAsync({
-        mediaTypes:ImagePicker.MediaTypeOptions.Images,
-        allowsEditing:true,
-        aspect:[1,1],
-        quality:1.0
-      })
-      if(data.uri){
-        this.setState({photo:data})
-        this.handleUploadPhoto()
-        this.setModalLoadingVisible(true)
+        const {granted} = await Permissions.askAsync(Permissions.CAMERA)
+        if(granted){
+          let data = await ImagePicker.launchCameraAsync({
+            mediaTypes:ImagePicker.MediaTypeOptions.Images,
+            allowsEditing:true,
+            aspect:[1,1],
+            quality:1.0
+          })
+          if(data.uri){
+            this.setState({photo:data})
+            this.handleUploadPhoto()
+            this.setModalLoadingVisible(true)
+          }
+        }
+        else{
+          Alert.alert("The app requests permission to camera.")
+        }
       }
-    }
-    else{
-      Alert.alert("The app requests permission to camera.")
-    }
-  }
-  else {
-    showMessage({
-      message: "Please connect to the internet",
-      description: "Network error",
-      type: "warning",
-  })
-  }
-  })
+      else {
+        showMessage({
+          message: "Please connect to the internet",
+          description: "Network error",
+          type: "warning",
+      })
+      }
+    })
   }
 
   connectToServer= async () => {
@@ -194,7 +177,7 @@ import Logout from '../Log Out/Logout';
 
   let accessToken = await SecureStore.getItemAsync('accessToken')
   
-  const request = fetch('http://45.88.173.109:10000/',{
+  const request = fetch('http://100.64.102.26:10000/',{
     method: "GET",
     headers:{'Authorization': 'Bearer '+accessToken}
   });
@@ -205,12 +188,15 @@ import Logout from '../Log Out/Logout';
         message: "Connection established",
         description: "The OCR server is online",
         type: "success",
-      })})
+      })
+    })
       .catch(error => {showMessage({
         message: "Connection failed",
         description: "The OCR server is offline",
         type: "warning",
-      })});
+      })
+    }
+    );
   }
 
   selectLanguage = (language) =>{
@@ -233,7 +219,6 @@ import Logout from '../Log Out/Logout';
     {
       this.setState({targetLanguage:'de'})
     }
-
   }
 
   render(){
@@ -245,60 +230,57 @@ import Logout from '../Log Out/Logout';
     return (
       <View style={styles.container}>
 
-                {this.context.infoScreenVisible ? <Tutorial/> : <View/>}
-                {this.context.logoutScreenVisible ? <Logout/>:<View/>}
-                <Modal 
-                animationType="slide"
-                transparent={true}
-                visible={loadingModalVisible}
-                onRequestClose={() => {
-                    this.setModalLoadingVisible(!loadingModalVisible);}}
-                >
+        {this.context.infoScreenVisible ? <Tutorial/> : <View/>}
+        {this.context.logoutScreenVisible ? <Logout/>:<View/>}
+        <Modal 
+        animationType="slide"
+        transparent={true}
+        visible={loadingModalVisible}
+        onRequestClose={() => {
+            this.setModalLoadingVisible(!loadingModalVisible);}}
+        >
+          <View style={styles.centeredView}>
+            <Text style={styles.TextLoadingModal}>The image is being processed..</Text>
+            <ActivityIndicator style={styles.ActivityIndicator} size="large" color="#00ff00" />
+          </View>
+        </Modal>
 
-                  <View style={styles.centeredView}>
-                    <Text style={styles.TextLoadingModal}>The image is being processed..</Text>
-                    <ActivityIndicator style={styles.ActivityIndicator} size="large" color="#00ff00" />
-                  </View>
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+            this.setModalVisible(!modalVisible);
+        }}
+        >
+          <View style={styles.centeredView}>
+            <ImageZoom 
+                style={styles.ImageZoom}
+                cropWidth={Dimensions.get('window').width}
+                cropHeight={Dimensions.get('window').height*0.6}
+                imageWidth={Dimensions.get('window').width}
+                imageHeight={Dimensions.get('window').height}
+                pinchToZoom={true}>
 
-                </Modal>
+              <Image source={{uri:this.state.fileName}} style={styles.ModalImage}></Image>
 
-                <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    this.setModalVisible(!modalVisible);
-                }}
-                >
-                    <View style={styles.centeredView}>
+            </ImageZoom>
 
-                    <ImageZoom 
-                       style={styles.ImageZoom}
-                       cropWidth={Dimensions.get('window').width}
-                       cropHeight={Dimensions.get('window').height*0.6}
-                       imageWidth={Dimensions.get('window').width}
-                       imageHeight={Dimensions.get('window').height}
-                       pinchToZoom={true}>
+              <View style={styles.modalView}>
 
-                    <Image source={{uri:this.state.fileName}} style={styles.ModalImage}></Image>
+                <TouchableHighlight style={styles.HighlightModalSave} onPress={() => this.handleSave()}>
+                  <Text style={styles.modalText}>Keep</Text>
+                </TouchableHighlight>
 
-                    </ImageZoom>
+                <TouchableHighlight style={styles.HighlightModalDiscard} onPress={() => this.handleDiscard()}>
+                  <Text style={styles.modalText}>Discard</Text>
+                </TouchableHighlight>
 
-                        <View style={styles.modalView}>
+              </View>
 
-                            <TouchableHighlight style={styles.HighlightModalSave} onPress={() => this.handleSave()}>
-                                <Text style={styles.modalText}>Keep</Text>
-                            </TouchableHighlight>
+          </View>
 
-                            <TouchableHighlight style={styles.HighlightModalDiscard} onPress={() => this.handleDiscard()}>
-                                <Text style={styles.modalText}>Discard</Text>
-                            </TouchableHighlight>
-
-                        </View>
-
-                    </View>
-
-                </Modal>
+        </Modal>
 
         <View style={styles.fixToText}>
           <View style={styles.uploadButtons}>
@@ -317,40 +299,40 @@ import Logout from '../Log Out/Logout';
               </View>
             </TouchableHighlight>
 
-            </View>
+          </View>
 
-            <View style={styles.dropDownView}>
-              <SelectDropdown
-                  data={languages}
-                  defaultButtonText="Target language"
-                  buttonStyle={styles.DropDown}
-                  buttonTextStyle={styles.DropDownText}
-                  onSelect={(selectedItem, index) => {
-                    this.selectLanguage(selectedItem)
-                  }}
-                  buttonTextAfterSelection={(selectedItem, index) => {
-                    return selectedItem
-                  }}
-                  rowTextForSelection={(item, index) => {
-                    return item
-                  }}
-              />
-            </View>
+          <View style={styles.dropDownView}>
+            <SelectDropdown
+                data={languages}
+                defaultButtonText="Target language"
+                buttonStyle={styles.DropDown}
+                buttonTextStyle={styles.DropDownText}
+                onSelect={(selectedItem, index) => {
+                  this.selectLanguage(selectedItem)
+                }}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  return selectedItem
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item
+                }}
+            />
+          </View>
 
         </View>
         
         <StatusBar backgroundColor="#d9593c" style="auto" />
 
         <TouchableHighlight style={styles.HighlightCamera}  >
-            <View style={styles.Button}>
-              <Text style={styles.ButtonText}>Camera</Text>
-            </View>
+          <View style={styles.Button}>
+            <Text style={styles.ButtonText}>Camera</Text>
+          </View>
         </TouchableHighlight>
 
         <TouchableHighlight style={styles.HighlightGallery} onPress={() => { this.props.navigation.navigate('Gallery') }} >
-              <View style={styles.Button}>
-                  <Text style={styles.ButtonText}>Gallery</Text>
-              </View>
+          <View style={styles.Button}>
+              <Text style={styles.ButtonText}>Gallery</Text>
+          </View>
         </TouchableHighlight>
 
       </View>

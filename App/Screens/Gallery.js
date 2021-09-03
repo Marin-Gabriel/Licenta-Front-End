@@ -1,21 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View,TouchableHighlight,Image,ScrollView,FlatList,Alert } from 'react-native';
+import { StyleSheet, Text, View,TouchableHighlight,FlatList } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import ImageSet from '../ImageSet/ImageSet';
-import ExpandingImage from '../ExpandableImage/ExpandingImage';
 import {ImageSetContext} from '../../Context/imageSet-Context'
 import Tutorial from '../Tutorial/Tutorial';
-import { AntDesign } from '@expo/vector-icons'; 
-import FlashMessage from "react-native-flash-message";
-import {showMessage, hideMessage} from "react-native-flash-message"; 
+import {showMessage} from "react-native-flash-message"; 
 import Logout from '../Log Out/Logout';
 class GalleryScreen extends React.Component {
 
   static contextType = ImageSetContext;
 
   forceRender = () =>{
-
     this.forceUpdate()
   }
 
@@ -27,37 +23,38 @@ class GalleryScreen extends React.Component {
   })
   }
 
-  render(){return (
-    
-    <View style={styles.container}>
+  render()
+          {
+            return (
+            
+            <View style={styles.container}>
 
-      {this.context.infoScreenVisible ? <Tutorial/> : <View/>}
-      {this.context.logoutScreenVisible ? <Logout/>:<View/>}
+              {this.context.infoScreenVisible ? <Tutorial/> : <View/>}
+              {this.context.logoutScreenVisible ? <Logout/>:<View/>}
 
-      <FlatList
-      style={styles.FlatList} 
-      ListEmptyComponent={() => <View style={styles.placeholder}><Text style={styles.placeholderShrug}>¯\_(ツ)_/¯</Text><Text style={styles.placeholderText}>You have no images stored yet.</Text></View>}
-      data={this.context.imageSet}
-      renderItem={
-        ({item}) =>(<ImageSet displayMessage={()=>this.displayMessage()} forceRender={()=>this.forceRender()} OriginalImage={item.image} ProcessedImage={item.processedImage} SetId={item.key}></ImageSet>)
-      } 
-      />
+              <FlatList
+              style={styles.FlatList} 
+              ListEmptyComponent={() => <View style={styles.placeholder}><Text style={styles.placeholderShrug}>¯\_(ツ)_/¯</Text><Text style={styles.placeholderText}>You have no images stored yet.</Text></View>}
+              data={this.context.imageSet}
+              renderItem={
+                ({item}) =>(<ImageSet displayMessage={()=>this.displayMessage()} forceRender={()=>this.forceRender()} OriginalImage={item.image} ProcessedImage={item.processedImage} SetId={item.key}></ImageSet>)
+              } 
+              />
 
-      <StatusBar backgroundColor="#d9593c" style="auto" />
-      <TouchableHighlight style={styles.HighlightCamera} onPress={() => { this.props.navigation.navigate('Camera') }} >
-          <View style={styles.Button}>
-            <Text style={styles.ButtonText}>Camera</Text>
-          </View>
-      </TouchableHighlight>
-      <TouchableHighlight style={styles.HighlightGallery}  >
-            <View style={styles.Button}>
-                <Text style={styles.ButtonText}>Gallery</Text>
+              <StatusBar backgroundColor="#d9593c" style="auto" />
+              <TouchableHighlight style={styles.HighlightCamera} onPress={() => { this.props.navigation.navigate('Camera') }} >
+                  <View style={styles.Button}>
+                    <Text style={styles.ButtonText}>Camera</Text>
+                  </View>
+              </TouchableHighlight>
+              <TouchableHighlight style={styles.HighlightGallery}  >
+                    <View style={styles.Button}>
+                        <Text style={styles.ButtonText}>Gallery</Text>
+                    </View>
+              </TouchableHighlight>
             </View>
-      </TouchableHighlight>
-      
-    </View>
-  );
-}
+          );
+        }
 }
 
 export default withNavigation(GalleryScreen);

@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Navigator from './Routes/Stack'
 import StartScreen from './App/Screens/Start';
 import * as SecureStore from 'expo-secure-store';
@@ -21,7 +20,7 @@ class App extends React.Component {
 
     let accessToken = await SecureStore.getItemAsync('accessToken')
 
-    fetch('http://45.88.173.109:10000/api/delete?SetId='+deletedSetId, {
+    fetch('http://100.64.102.26:10000/api/delete?SetId='+deletedSetId, {
       method: "DELETE",
       headers:{'Authorization': 'Bearer '+accessToken}
     }).then(response => response.json())
@@ -47,8 +46,6 @@ class App extends React.Component {
       .catch(error => {
         console.log("Delete error", error);
       });
-
-    console.log("Deleted "+deletedSetId)
   }
 
   setLogged = value =>{
@@ -68,7 +65,6 @@ class App extends React.Component {
     this.setLogged(false)
     await SecureStore.deleteItemAsync('accessToken')
   }
-
   state={
     logoutScreenVisible:false,
     infoScreenVisible:false,
@@ -76,13 +72,12 @@ class App extends React.Component {
     imageSet:[],
     setImageSet:this.setImageSet,
     addImageSet:this.addImageSet,
+    deleteImageSet:this.deleteImageSet,
     setLogged:this.setLogged,
     logOut:this.logOut,
     setLogoutScreenVisible:this.setLogoutScreenVisible,
     setInfoScreenVisible:this.setInfoScreenVisible,
-    deleteImageSet:this.deleteImageSet
   }
-
   async save(key, value) {
     await SecureStore.setItemAsync(key, value);
   }
@@ -94,7 +89,7 @@ class App extends React.Component {
 
     if(result){
     this.save('accessToken',accessToken)
-    fetch('http://45.88.173.109:10000/api/getImages',{
+    fetch('http://100.64.102.26:10000/api/getImages',{
       method: "GET",
       headers:{'Authorization': 'Bearer '+accessToken,
         'Content-Type':'application/json'}
@@ -109,22 +104,22 @@ class App extends React.Component {
     }
   }
 
-  render (){
+  render ()
+  {
+    const navigator = <ImageSetContext.Provider value={this.state}><Navigator /><FlashMessage position="top" /></ImageSetContext.Provider>;
+    const login=<View><StartScreen callback={this.login.bind(this)}></StartScreen></View>;
+    let rendered;
 
-  const navigator = <ImageSetContext.Provider value={this.state}><Navigator /><FlashMessage position="top" /></ImageSetContext.Provider>;
-  const login=<View><StartScreen callback={this.login.bind(this)}></StartScreen></View>;
-  let rendered;
+    if(this.state.isLoggedIn){
+      rendered=navigator;
+    }
+    else{
+      rendered=login
+    }
 
-  if(this.state.isLoggedIn){
-    rendered=navigator;
-  }
-  else{
-    rendered=login
-  }
-
-  return (
-   rendered
-  );}
+    return (
+    rendered
+    );}
 }
 
 const styles = StyleSheet.create({

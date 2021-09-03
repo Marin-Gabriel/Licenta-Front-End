@@ -1,10 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View,TouchableHighlight,Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { StyleSheet, Text, View} from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 import { ImageSetContext } from '../../Context/imageSet-Context';
-import * as SecureStore from 'expo-secure-store';
 
 export default class Header extends React.Component{
 

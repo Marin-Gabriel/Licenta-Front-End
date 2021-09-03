@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Modal, Text, View,TouchableHighlight,Image,Dimensions } from 'react-native';
+import {StyleSheet, Modal, Text, View,TouchableHighlight} from 'react-native';
 import { ImageSetContext } from '../../Context/imageSet-Context';
 
 export default class Logout extends React.Component{
@@ -29,8 +29,12 @@ export default class Logout extends React.Component{
                     <View style={styles.logoutContainer}>
                         <Text style={styles.logoutModalText}>Are you sure you want to Log Out?</Text>
                         <View style={styles.highlightContainers}>
-                        <TouchableHighlight style={styles.highlightLogout} onPress={()=>this.handleConfirmLogout()}><Text style={styles.highlightText}>Log Out</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.highlightCancel} onPress={()=>this.handleClose()}><Text style={styles.highlightText}>Cancel</Text></TouchableHighlight>
+                            <TouchableHighlight style={styles.highlightLogout} onPress={()=>this.handleConfirmLogout()}>
+                                <Text style={styles.highlightText}>Log Out</Text>
+                            </TouchableHighlight>
+                            <TouchableHighlight style={styles.highlightCancel} onPress={()=>this.handleClose()}>
+                                <Text style={styles.highlightText}>Cancel</Text>
+                            </TouchableHighlight>
                         </View>
                     </View>
                 </View>

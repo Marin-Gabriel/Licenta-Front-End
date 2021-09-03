@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View,TouchableHighlight,Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import ExpandingImage from '../ExpandableImage/ExpandingImage';
-import {ImageSetContext} from '../../Context/imageSet-Context'
+import { ImageSetContext } from '../../Context/imageSet-Context'
 
 export default class ImageSet extends React.Component{
 
@@ -11,11 +11,21 @@ export default class ImageSet extends React.Component{
     {
         return (
             <View style={styles.SetContainer}>
-                <ExpandingImage displayMessage={()=>this.props.displayMessage()} forceRender={()=>this.props.forceRender()}Image={this.props.OriginalImage} style={styles.LeftImage} deleteImageSet={()=>this.context.deleteImageSet(this.props.SetId)}></ExpandingImage>
-                <ExpandingImage displayMessage={()=>this.props.displayMessage()} forceRender={()=>this.props.forceRender()} Image={this.props.ProcessedImage} style={styles.RightImage} deleteImageSet={()=>this.context.deleteImageSet(this.props.SetId)}></ExpandingImage>
+                <ExpandingImage displayMessage={()=>this.props.displayMessage()}
+                 forceRender={()=>this.props.forceRender()}
+                 Image={this.props.OriginalImage}
+                 style={styles.LeftImage}
+                 deleteImageSet={()=>this.context.deleteImageSet(this.props.SetId)}>
+                 </ExpandingImage>
+                <ExpandingImage displayMessage={()=>this.props.displayMessage()} 
+                forceRender={()=>this.props.forceRender()} 
+                Image={this.props.ProcessedImage} 
+                style={styles.RightImage} 
+                deleteImageSet={()=>this.context.deleteImageSet(this.props.SetId)}>
+                </ExpandingImage>
             </View>
-    );
-}
+        );
+    }
 }
 const styles = StyleSheet.create({
     SetContainer:{

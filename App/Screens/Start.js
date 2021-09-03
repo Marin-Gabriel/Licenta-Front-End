@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text,Alert, View,TouchableHighlight,Image,ScrollView,FlatList,TextInput,Modal } from 'react-native';
+import { StyleSheet, Text, View,TouchableHighlight,Image,TextInput,Modal } from 'react-native';
 import FlashMessage from "react-native-flash-message";
 import {showMessage, hideMessage} from "react-native-flash-message"; 
 import NetInfo from "@react-native-community/netinfo";
@@ -107,12 +107,11 @@ class StartScreen extends React.Component {
         NetInfo.fetch().then(networkState => {
             if(networkState.isConnected){
                 var inputErrors=this.checkForErrors('Login')
-                //console.log(inputErrors)
                 if(inputErrors){
                     console.log('erori login')
                 }
                 else{
-                    fetch('http://45.88.173.109:10000/login', {
+                    fetch('http://100.64.102.26:10000/login', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -129,7 +128,6 @@ class StartScreen extends React.Component {
                       })
                     .then(data => {
                         if(data.ok)
-                            console.log(data.accessToken)
                             this.props.callback(true,data.accessToken)
                     })
                     .catch(error => {
@@ -153,7 +151,7 @@ class StartScreen extends React.Component {
                     }
                     });
                     }
-            }
+                }
             else{
                 showMessage({
                     message: "Please connect to the internet",
@@ -172,7 +170,7 @@ class StartScreen extends React.Component {
                     console.log('erori register')
                 }
                 else{
-                fetch('http://45.88.173.109:10000/register', {
+                fetch('http://100.64.102.26:10000/register', {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
@@ -196,7 +194,6 @@ class StartScreen extends React.Component {
                                 type: "success",
                             })
                         }
-                        console.log(data.ok)
                     })
                     .catch(error => {
                     console.log("register error", error);
@@ -236,39 +233,37 @@ class StartScreen extends React.Component {
         return (
             
             <View>
-
                 <Modal 
                 animationType="slide"
                 transparent={false}
                 visible={loginModalVisible}
                 onRequestClose={() => {
-                    this.setModalLoginVisible(loginModalVisible);}}
+                this.setModalLoginVisible(loginModalVisible);}}
                 >
 
-                <View style={styles.InputsContainer}>
-                    {inputError ? <Text style={styles.ErrorMessage}>{errorMessage}</Text> : null }
-                    <TextInput placeholder=" Username" textAlign='center' maxLength={30} onChangeText={text => this.setUsername(text)} style={styles.TextInput}></TextInput>
-                    <TextInput placeholder=" Password" textAlign='center' maxLength={30} onChangeText={text => this.setPassword(text)} secureTextEntry={true} style={styles.TextInput}></TextInput>
-               </View>
-               <View style={styles.HighlightsContainer}>
-                    <TouchableHighlight style={styles.LoginHighlight} onPress={() => this.atemptLogin()}>
-                        <Text style={styles.HighlightTextLogin}>Login</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight style={styles.BackHighlight} onPress={() => this.handleLoginBackPress(!loginModalVisible)}>
-                        <Text style={styles.HighlightTextBack}>Back</Text>
-                    </TouchableHighlight>
-               </View>
-               <FlashMessage position="top" />
-                </Modal>
+                    <View style={styles.InputsContainer}>
+                        {inputError ? <Text style={styles.ErrorMessage}>{errorMessage}</Text> : null }
+                        <TextInput placeholder=" Username" textAlign='center' maxLength={30} onChangeText={text => this.setUsername(text)} style={styles.TextInput}></TextInput>
+                        <TextInput placeholder=" Password" textAlign='center' maxLength={30} onChangeText={text => this.setPassword(text)} secureTextEntry={true} style={styles.TextInput}></TextInput>
+                    </View>
+                    <View style={styles.HighlightsContainer}>
+                        <TouchableHighlight style={styles.LoginHighlight} onPress={() => this.atemptLogin()}>
+                            <Text style={styles.HighlightTextLogin}>Login</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight style={styles.BackHighlight} onPress={() => this.handleLoginBackPress(!loginModalVisible)}>
+                            <Text style={styles.HighlightTextBack}>Back</Text>
+                        </TouchableHighlight>
+                    </View>
+                    <FlashMessage position="top" />
+               </Modal>
  
                 <Modal 
                 animationType="slide"
                 transparent={false}
                 visible={registerModalVisible}
                 onRequestClose={() => {
-                    this.setModalRegisterVisible(registerModalVisible);}}
+                this.setModalRegisterVisible(registerModalVisible);}}
                 >
-
                     <View style={styles.InputsContainer}>
                         {inputError ? <Text style={styles.ErrorMessage}>{errorMessage}</Text> : null }
                         <TextInput placeholder=" Username" textAlign='center' maxLength={30} onChangeText={text => this.setUsername(text)} style={styles.TextInput}></TextInput>

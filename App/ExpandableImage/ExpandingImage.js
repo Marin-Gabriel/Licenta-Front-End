@@ -45,7 +45,6 @@ export default class ExpandingImage extends React.Component{
         return(
 
             <View style={styles.ViewContainer}>
-
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -58,38 +57,42 @@ export default class ExpandingImage extends React.Component{
                     <View style={styles.deleteContainer}>
                         <Text style={styles.deleteModalText}>This action is not reversible. Are you sure you want to delete the image set?</Text>
                         <View style={styles.highlightContainers}>
-                        <TouchableHighlight style={styles.highlightDelete} onPress={()=>this.handleConfirmDelete()}><Text style={styles.highlightText}>Delete</Text></TouchableHighlight>
-                        <TouchableHighlight style={styles.highlightCancel} onPress={()=>this.setDeleteModalVisible(false)}><Text style={styles.highlightText}>Cancel</Text></TouchableHighlight>
+                            <TouchableHighlight style={styles.highlightDelete} onPress={()=>this.handleConfirmDelete()}>
+                                <Text style={styles.highlightText}>Delete</Text>
+                            </TouchableHighlight>
+                            <TouchableHighlight style={styles.highlightCancel} onPress={()=>this.setDeleteModalVisible(false)}>
+                                <Text style={styles.highlightText}>Cancel</Text>
+                            </TouchableHighlight>
                         </View>
                     </View>
                 </View>
             </Modal>
 
-                <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    this.setModalVisible(!modalVisible);
-                }}
-                >
-                    <View style={styles.centeredView}>
+            <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                this.setModalVisible(!modalVisible);
+            }}
+            >
+                <View style={styles.centeredView}>
                     <ImageZoom 
-                       style={styles.ImageZoom}
-                       cropWidth={Dimensions.get('window').width}
-                       cropHeight={Dimensions.get('window').height*0.6}
-                       imageWidth={Dimensions.get('window').width}
-                       imageHeight={Dimensions.get('window').height}
-                       pinchToZoom={true}>
-                    <Image source={{uri:this.props.Image}} style={styles.ModalImage}></Image>
+                        style={styles.ImageZoom}
+                        cropWidth={Dimensions.get('window').width}
+                        cropHeight={Dimensions.get('window').height*0.6}
+                        imageWidth={Dimensions.get('window').width}
+                        imageHeight={Dimensions.get('window').height}
+                        pinchToZoom={true}>
+                        <Image source={{uri:this.props.Image}} style={styles.ModalImage}></Image>
                     </ImageZoom>
-                        <View style={styles.modalView}>
-                            <TouchableHighlight onPress={() => this.setModalVisible(!modalVisible)}>
-                                <Text style={styles.modalText}>Close</Text>
-                            </TouchableHighlight>
-                        </View>
+                    <View style={styles.modalView}>
+                        <TouchableHighlight onPress={() => this.setModalVisible(!modalVisible)}>
+                            <Text style={styles.modalText}>Close</Text>
+                        </TouchableHighlight>
                     </View>
-                </Modal>
+                </View>
+            </Modal>
             
                 <TouchableHighlight delayLongPress={1000} onLongPress={()=>this.atemptDelete()} onPress={() => this.setModalVisible(!modalVisible)} style={styles.ImageContainer}>
                     <View>
